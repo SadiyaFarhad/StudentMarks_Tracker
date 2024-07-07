@@ -1,0 +1,140 @@
+#Python program keeps track of students scores in different subjects and calculates their total and average scores. 
+#It also finds the student with the highest score.
+def add_student_scores(student_scores):
+    name = input("Enter student name: ")
+    scores = {}
+    subjects = ['Math', 'Science', 'English', 'History']
+    for subject in subjects:
+        score = float(input(f"Enter score for {subject}: "))
+        scores[subject] = score
+    student_scores[name] = scores
+
+def calculate_total_and_average(student_scores):
+    for student, scores in student_scores.items():
+        total = sum(scores.values())
+        average = total / len(scores)
+        student_scores[student]['Total'] = total
+        student_scores[student]['Average'] = average
+
+def find_top_student(student_scores):
+    top_student = None
+    highest_total = 0
+    for student, scores in student_scores.items():
+        if scores['Total'] > highest_total:
+            highest_total = scores['Total']
+            top_student = student
+    return top_student, highest_total
+
+def print_student_scores(student_scores):
+    for student, scores in student_scores.items():
+        print(f"\nStudent: {student}")
+        for subject, score in scores.items():
+            if subject not in ['Total', 'Average']:
+                print(f"{subject}: {score}")
+        print(f"Total: {scores['Total']}")
+        print(f"Average: {scores['Average']}")
+
+def student_scores_program():
+    student_scores = {}
+    while True:
+        print("\nOptions:")
+        print("1. Add student scores")
+        print("2. Calculate total and average scores")
+        print("3. Find top student")
+        print("4. Print student scores")
+        print("5. Exit")
+        choice = input("Enter choice (1/2/3/4/5): ")
+
+        if choice == '1':
+            add_student_scores(student_scores)
+        elif choice == '2':
+            calculate_total_and_average(student_scores)
+        elif choice == '3':
+            top_student, highest_total = find_top_student(student_scores)
+            print(f"\nTop Student: {top_student} with a total score of {highest_total}")
+        elif choice == '4':
+            print_student_scores(student_scores)
+        elif choice == '5':
+            break
+        else:
+            print("Invalid input, please try again.")
+
+if __name__ == "__main__":
+    student_scores_program()
+#OUTPUT
+Options:
+1. Add student scores
+2. Calculate total and average scores
+3. Find top student
+4. Print student scores
+5. Exit
+Enter choice (1/2/3/4/5): 1
+Enter student name: John
+Enter score for Math: 85
+Enter score for Science: 90
+Enter score for English: 78
+Enter score for History: 88
+
+Options:
+1. Add student scores
+2. Calculate total and average scores
+3. Find top student
+4. Print student scores
+5. Exit
+Enter choice (1/2/3/4/5): 1
+Enter student name: Jane
+Enter score for Math: 92
+Enter score for Science: 81
+Enter score for English: 85
+Enter score for History: 87
+
+Options:
+1. Add student scores
+2. Calculate total and average scores
+3. Find top student
+4. Print student scores
+5. Exit
+Enter choice (1/2/3/4/5): 2
+
+Options:
+1. Add student scores
+2. Calculate total and average scores
+3. Find top student
+4. Print student scores
+5. Exit
+Enter choice (1/2/3/4/5): 3
+
+Top Student: Jane with a total score of 345.0
+
+Options:
+1. Add student scores
+2. Calculate total and average scores
+3. Find top student
+4. Print student scores
+5. Exit
+Enter choice (1/2/3/4/5): 4
+
+Student: John
+Math: 85.0
+Science: 90.0
+English: 78.0
+History: 88.0
+Total: 341.0
+Average: 85.25
+
+Student: Jane
+Math: 92.0
+Science: 81.0
+English: 85.0
+History: 87.0
+Total: 345.0
+Average: 86.25
+
+Options:
+1. Add student scores
+2. Calculate total and average scores
+3. Find top student
+4. Print student scores
+5. Exit
+Enter choice (1/2/3/4/5): 5
+EXIT
