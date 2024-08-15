@@ -1,63 +1,82 @@
-#Python program keeps track of students scores in different subjects and calculates their total and average scores. 
-#It also finds the student with the highest score.
-def add_student_scores(student_scores):
-    name = input("Enter student name: ")
-    scores = {}
-    subjects = ['Math', 'Science', 'English', 'History']
-    for subject in subjects:
-        score = float(input(f"Enter score for {subject}: "))
-        scores[subject] = score
-    student_scores[name] = scores
 
-def calculate_total_and_average(student_scores):
-    for student, scores in student_scores.items():
-        total = sum(scores.values())
-        average = total / len(scores)
-        student_scores[student]['Total'] = total
-        student_scores[student]['Average'] = average
+import tkinter as tk
+from tkinter import messagebox
+import sqlite3
 
-def find_top_student(student_scores):
-    top_student = None
-    highest_total = 0
-    for student, scores in student_scores.items():
-        if scores['Total'] > highest_total:
-            highest_total = scores['Total']
-            top_student = student
-    return top_student, highest_total
+# Connect to the database
+conn = sqlite3.connect('student_marks.db')
+cursor = conn.cursor()
 
-def print_student_scores(student_scores):
-    for student, scores in student_scores.items():
-        print(f"\nStudent: {student}")
-        for subject, score in scores.items():
-            if subject not in ['Total', 'Average']:
-                print(f"{subject}: {score}")
-        print(f"Total: {scores['Total']}")
-        print(f"Average: {scores['Average']}")
+# Create the table if it doesn't exist
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS student_marks (
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        marks INTEGER
+    )
+''')
 
-def student_scores_program():
-    student_scores = {}
-    while True:
-        print("\nOptions:")
-        print("1. Add student scores")
-        print("2. Calculate total and average scores")
-        print("3. Find top student")
-        print("4. Print student scores")
-        print("5. Exit")
-        choice = input("Enter choice (1/2/3/4/5): ")
+def add_student():
+    name = name_entry.get()
+    marks = marks_entry.get()
+    cursor.execute('INSERT INTO student_marks (name, marks) VALUES (?, ?)', (name, marks))
+    conn.commit()
+    messagebox.showinfo("Success", "Student added successfully!")
 
-        if choice == '1':
-            add_student_scores(student_scores)
-        elif choice == '2':
-            calculate_total_and_average(student_scores)
-        elif choice == '3':
-            top_student, highest_total = find_top_student(student_scores)
-            print(f"\nTop Student: {top_student} with a total score of {highest_total}")
-        elif choice == '4':
-            print_student_scores(student_scores)
-        elif choice == '5':
-            break
-        else:
-            print("Invalid input, please try again.")
+def view_students():
+    student_list.delete(0, tk.END)
+    cursor.execute('SELECT * FROM student_marks')
+    students = cursor.fetchall()
+    for student in students:
+        student_list.insert(tk.END, f"ID: {student[0]}, Name: {student[1]}, Marks: {student[2]}")
 
-if __name__ == "__main__":
-    student_scores_program()
+def update_marks():
+    id = id_entry.get()
+    marks = marks_entry.get()
+    cursor.execute('UPDATE student_marks SET marks = ? WHERE id = ?', (marks, id))
+    conn.commit()
+    messagebox.showinfo("Success", "Marks updated successfully!")
+
+def delete_student():
+    id = id_entry.get()
+    cursor.execute('DELETE FROM student_marks WHERE id = ?', (id,))
+    conn.commit()
+    messagebox.showinfo("Success", "Student deleted successfully!")
+
+root =tk.Tk()
+root.title("Student Mark Tracker")
+root.geometry("800x6000")
+
+name_label = tk.Label(root, text="Name:",font=("Arial",16))
+name_label.pack()
+name_entry = tk.Entry(root)
+name_entry.pack()
+
+marks_label = tk.Label(root, text="Marks:",font=("Arial",16))
+marks_label.pack()
+marks_entry = tk.Entry(root)
+marks_entry.pack()
+
+id_label = tk.Label(root, text="ID:",font=("Arial",16))
+id_label.pack()
+id_entry = tk.Entry(root)
+id_entry.pack()
+
+add_button = tk.Button(root, text="Add Student", command=add_student,font=("Arial",12),width=15)
+add_button.pack()
+
+view_button = tk.Button(root, text="View Students", command=view_students,font=("Arial",12),width=15)
+view_button.pack()
+
+update_button = tk.Button(root, text="Update Marks", command=update_marks,font=("Arial",12),width=15)
+update_button.pack()
+
+delete_button = tk.Button(root, text="Delete Student", command=delete_student,font=("Arial",12),width=15)
+delete_button.pack()
+
+student_list = tk.Listbox(root,font=(10))
+student_list.pack()
+
+root.mainloop()
+
+conn.close()
